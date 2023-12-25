@@ -1,0 +1,44 @@
+{
+	"restaurants": [
+		{
+			"name": "Pizza Hut",
+			"style": "Italian",
+			"address": "Tel Aviv, 23st",
+			"openHour": 1000,
+			"closeHour": 2300,
+			"vegetarian": false
+		},
+		{
+			"name": "Sushi Palace",
+			"style": "Japanese",
+			"address": "Tel Aviv, 24st",
+			"openHour": 800,
+			"closeHour": 1900,
+			"vegetarian": true
+		},
+		{
+			"name": "McDonald's",
+			"style": "American",
+			"address": "Tel Aviv, 25st",
+			"openHour": 1000,
+			"closeHour": 2200,
+			"vegetarian": true
+		},
+		{
+			"name": "Burger Master",
+			"style": "German",
+			"address": "Tel Aviv, 26st",
+			"openHour": 900,
+			"closeHour": 2230,
+			"vegetarian": false
+		},
+		{
+			"name": "Hummus King",
+			"style": "Israeli",
+			"address": "Tel Aviv, 27st",
+			"openHour": 300,
+			"closeHour": 1240,
+			"vegetarian": true
+		}
+	]
+}
