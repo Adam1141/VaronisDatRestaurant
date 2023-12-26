@@ -45,3 +45,21 @@ variable "restaurants_file_path" {
   description = "Path to restaurants JSON file"
   default     = "../restaurants.json"
 }
+
+variable "s3_terraform_state_bucket_name" {
+  type        = string
+  description = "S3 bucket used to store terraform state"
+  default     = "varonis-datrestaurant-tf-state-20231226"
+}
+
+variable "dynamodb_state_locking_name" {
+  type        = string
+  description = "DynamoDB table used for terraform state file locking"
+  default     = "varonis-datrestaurant-tf-state-lock-20231226"
+}
+
+variable "region" {
+  type        = string
+  description = "AWS region to use for deployment"
+  default     = "us-east-1"
+}
