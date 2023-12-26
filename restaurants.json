@@ -68,16 +68,16 @@
 			"name": "Burger Master 2",
 			"style": "German",
 			"address": "Tel Aviv, 26st",
-			"openHour": 900,
-			"closeHour": 2230,
+			"openHour": 2200,
+			"closeHour": 500,
 			"vegetarian": false
 		},
 		{
 			"name": "Hummus King 2",
 			"style": "Israeli",
 			"address": "Tel Aviv, 27st",
-			"openHour": 300,
-			"closeHour": 1240,
+			"openHour": 2000,
+			"closeHour": 800,
 			"vegetarian": true
 		}
 	]

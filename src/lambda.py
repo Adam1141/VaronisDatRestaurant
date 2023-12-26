@@ -52,8 +52,10 @@ def generate_sql_expression(query_params, at_time=datetime.now()):
                 requested_open = value in ["true", "1", "yes"]
                 expression_list.append(
                     f" {' WHERE' if len(expression_list) == 1 else ' AND'} \
-                    {current_time} {'' if requested_open else 'NOT '}\
-                          BETWEEN s.openHour AND s.closeHour")
+                    {'' if requested_open else 'NOT '} ({current_time} BETWEEN \
+                    s.openHour AND s.closeHour OR (s.openHour >= s.closeHour AND \
+                    ({current_time} >= s.openHour OR {current_time} < s.closeHour)))"  # noqa
+                )
     expression_list.append(f" LIMIT {max_returned_results}")
 
     return "".join(expression_list)
