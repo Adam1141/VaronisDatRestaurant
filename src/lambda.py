@@ -47,17 +47,16 @@ def generate_sql_expression(query_params, at_time=datetime.now()):
                     f" {' WHERE' if len(expression_list) == 1 else ' AND'} \
                     s.{key} = {'true' if requested_vegetarian else 'false'}")
             elif key == "open":
-                # an integer hhmm (military time)
-                current_time = int(f"{at_time.hour}{at_time.minute}")
+                # an integer hhmm (military time) UTC timezone
+                current_time = int(at_time.strftime("%H%M"))
                 requested_open = value in ["true", "1", "yes"]
                 expression_list.append(
                     f" {' WHERE' if len(expression_list) == 1 else ' AND'} \
-                    {'' if requested_open else 'NOT '} ({current_time} BETWEEN \
-                    s.openHour AND s.closeHour OR (s.openHour >= s.closeHour AND \
+                    {'' if requested_open else 'NOT '} (({current_time} >= s.openHour \
+                    AND {current_time} < s.closeHour) OR (s.openHour >= s.closeHour AND \
                     ({current_time} >= s.openHour OR {current_time} < s.closeHour)))"  # noqa
                 )
     expression_list.append(f" LIMIT {max_returned_results}")
-
     return "".join(expression_list)
 
 
