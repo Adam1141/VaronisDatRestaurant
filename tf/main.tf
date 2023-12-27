@@ -1,9 +1,11 @@
 resource "aws_s3_bucket" "logging" {
-  bucket = var.logging_s3_bucket_name
+  bucket        = var.logging_s3_bucket_name
+  force_destroy = true
 }
 
 resource "aws_s3_bucket" "restaurants" {
-  bucket = var.restaurants_s3_bucket_name
+  bucket        = var.restaurants_s3_bucket_name
+  force_destroy = true
 }
 
 resource "aws_s3_object" "restaurants_file" {
