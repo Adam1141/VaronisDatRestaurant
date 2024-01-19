@@ -21,18 +21,21 @@ variable "source_dir" {
 
 variable "archive_output_path" {
   type        = string
-  default     = "functions.zip"
+  default     = "./functions.zip"
   description = "Path to Azure Function App archive for upload to SA Container"
 }
 
-variable "restaurants_file_path" {
-  type = string
-  default = "../restaurants.json"
-  description = "Path to restaurants JSON file"
+variable "logging_container_id" {
+  type        = string
+  description = "ID of logging container, used to assign role"
 }
 
-variable "max_returned_results" {
-  type = number
-  default = 5
-  description = "Max returned results from SQL query on restaurants JSON file"
+variable "restaurants_container_id" {
+  type        = string
+  description = "ID of restaurants container, used to assign role"
+}
+
+variable "app_settings" {
+  type        = map(any)
+  description = "App Settings for Azure Function App"
 }

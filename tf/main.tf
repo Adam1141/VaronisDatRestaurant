@@ -1,56 +1,67 @@
-resource "aws_s3_bucket" "logging" {
-  bucket        = var.logging_s3_bucket_name
-  force_destroy = true
+resource "azurerm_resource_group" "rg" {
+  location = var.location
+  name     = var.rg
 }
 
-resource "aws_s3_bucket" "restaurants" {
-  bucket        = var.restaurants_s3_bucket_name
-  force_destroy = true
+resource "azurerm_storage_account" "data" {
+  name                     = "sa${var.project_name}"
+  resource_group_name      = var.rg
+  location                 = var.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  account_kind             = "StorageV2"
 }
 
-resource "aws_s3_object" "restaurants_file" {
-  bucket     = var.restaurants_s3_bucket_name
-  key        = var.s3_restaurants_key
-  source     = var.restaurants_file_path
-  etag       = filemd5(var.restaurants_file_path)
-  depends_on = [aws_s3_bucket.restaurants]
+resource "azurerm_storage_container" "logging" {
+  name                 = "logging"
+  storage_account_name = azurerm_storage_account.data.name
 }
 
-module "lambda" {
-  source           = "./modules/lambda"
-  function_name    = var.lambda_function_name
-  source_file_path = abspath(var.lambda_source_file_path)
-  runtime          = var.lambda_runtime
-  environment = {
-    S3_LOGGING_BUCKET     = var.logging_s3_bucket_name
-    S3_RESTAURANTS_BUCKET = var.restaurants_s3_bucket_name
-    S3_RESTAURANTS_KEY    = var.s3_restaurants_key
-    MAX_RETURNED_RESULTS  = var.lambda_max_returned_results
+resource "azurerm_storage_container" "restaurants" {
+  name                 = "restaurants"
+  storage_account_name = azurerm_storage_account.data.name
+}
+
+resource "azurerm_storage_blob" "restaurants" {
+  name                   = "restaurants.json"
+  storage_account_name   = azurerm_storage_account.data.name
+  storage_container_name = azurerm_storage_container.restaurants.name
+  type                   = "Block"
+  content_type           = "application/json"
+  content_md5            = filemd5(var.restaurants_file_path)
+  source                 = var.restaurants_file_path
+}
+
+module "azure_function" {
+  source                   = "./modules/azure_function"
+  source_dir               = abspath(var.source_dir)
+  archive_output_path      = abspath(var.archive_output_path)
+  logging_container_id     = azurerm_storage_container.logging.resource_manager_id
+  restaurants_container_id = azurerm_storage_container.restaurants.resource_manager_id
+  app_settings = {
+    SA                       = azurerm_storage_account.data.name
+    SA_LOGGING_CONTAINER     = azurerm_storage_container.logging.name
+    SA_RESTAURANTS_CONTAINER = azurerm_storage_container.restaurants.name
+    SA_RESTAURANTS_BLOB      = azurerm_storage_blob.restaurants.name
+    MAX_RETURNED_RESULTS     = var.max_returned_results
   }
-  depends_on = [aws_s3_bucket.logging, aws_s3_bucket.restaurants, aws_s3_object.restaurants_file]
-}
 
-module "api_gateway" {
-  source = "./modules/api_gateway"
-  routes = [
-    {
-      id                   = "1"
-      resource             = "/restaurants"
-      method               = "GET"
-      lambda_invoke_arn    = module.lambda.lambda_invoke_arn
-      lambda_function_name = var.lambda_function_name
-    }
+  depends_on = [
+    azurerm_storage_container.logging,
+    azurerm_storage_container.restaurants,
+    azurerm_storage_blob.restaurants
   ]
-  depends_on = [module.lambda]
 }
 
-# used to delete archives created for Lambda code when running locally
-resource "terraform_data" "post_apply" {
-  depends_on = [module.lambda]
+
+resource "terraform_data" "remove_function_app_archive" {
   triggers_replace = [
     timestamp()
   ]
+
   provisioner "local-exec" {
-    command = "rm ${module.lambda.lambda_archive_filename}"
+    command = "rm ${var.archive_output_path}"
   }
+
+  depends_on = [module.azure_function]
 }

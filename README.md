@@ -4,7 +4,7 @@
 
 ![Design overview](./overview.png?raw=true 'Design overview')
 
-
+endpoint: https://fa-azurefunction.azurewebsites.net/api/restaurants
 
 ## Usage
 
@@ -34,7 +34,7 @@ pass filters as query params such as, GET /restaurants?name=a&style=b&address=c
 ## Examples
 
 ```
-curl --silent 'https://7hbesjy6xi.execute-api.us-east-1.amazonaws.com/restaurants?vegetarian=no&style=italian&open=yes' | jq
+curl --silent 'https://fa-azurefunction.azurewebsites.net/api/restaurants?vegetarian=no&style=italian&open=yes' | jq
 {
   "restaurants": [
     {
@@ -59,7 +59,7 @@ curl --silent 'https://7hbesjy6xi.execute-api.us-east-1.amazonaws.com/restaurant
 ```
 
 ```
-curl --silent 'https://7hbesjy6xi.execute-api.us-east-1.amazonaws.com/restaurants?vegetarian=yes&open=false' | jq
+curl --silent 'https://fa-azurefunction.azurewebsites.net/api/restaurants?vegetarian=yes&open=false' | jq
 {
   "restaurants": [
     {
